@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<!-- saved from url=(0122)https://widget.reviews.io/badge-ribbon/widget?elementId=badge-ribbon&version=undefined&&store=the-pi-hut&mono=1&size=small -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Reviews Ribbon Badge</title>
+<link rel="stylesheet" href="./style-cf.css">
+<link rel="stylesheet" href="./style.css">
+<link href="./css2" rel="stylesheet">
+<script src="./axios.min.js"></script>
+
+<!--[if lte IE 8]>
+        <link rel="stylesheet" type="text/css" href="css/ie8.css" />
+        <![endif]-->
+</head>
+<body>
+<div class="BadgeRibbon BadgeRibbon--small">
+<a href="http://www.reviews.io/company-reviews/store/the-pi-hut?utm_source=the-pi-hut&amp;utm_medium=widget&amp;utm_campaign=badge-ribbon" target="_blank">
+<div>
+<div class="BadgeRibbon__cell">
+<div class="BadgeRibbon__img__content">
+<img style="width: 180px" src="./reviewsio-logo.svg">
+</div>
+</div>
+<div class="BadgeRibbon__cell">
+<div class="BadgeRibbon__stats__content">
+<div class="BadgeRibbon__read__reviews">
+Read our <span class="ruk_count">70,710</span> reviews
+</div>
+<div class="BadgeRibbon__stars"><i class="ruk-icon-full-star-01 RatingStars__star"></i> <i class="ruk-icon-full-star-01 RatingStars__star"></i> <i class="ruk-icon-full-star-01 RatingStars__star"></i> <i class="ruk-icon-full-star-01 RatingStars__star"></i> <i class="ruk-icon-full-star-01 RatingStars__star"></i> </div>
+</div>
+</div>
+</div>
+</a>
+</div>
+
+<script>
+
+            var contentTemplates = 'undefined'.split(';');
+
+            //If ContentMode is not set. For Users with widget installed already!
+
+            if (contentTemplates == "undefined"){
+                contentTemplates = [];
+                contentTemplates.push("company")
+            }
+
+            for ( let i = 0; i < contentTemplates.length; i++){
+
+                loadReviews(contentTemplates[i]);
+            }
+
+            let total_reviews = 0;
+            let average_score = 0;
+
+            let completed_API_tasks = 0;
+            let divide_number = 0;
+
+            function loadReviews(review_type){
+
+
+                //Axios is a ajax request lib
+
+                switch (review_type) {
+
+                    case "company": {
+
+                        axios.get('https://api.reviews.io/merchant/latest?store=the-pi-hut&branch=')
+                              .then(function(response){
+
+
+                                if(response.data.stats.total_reviews){
+
+                                    total_reviews += Number(response.data.stats.total_reviews);
+                                    average_score += Number(response.data.stats.average_rating);
+                                    divide_number++;
+                                }
+                                completed_API_tasks++;
+                                completed();
+
+                              });
+                        break;
+                    }
+                    case "product": {
+
+                        axios.get('https://api.reviews.io/product/review?store=the-pi-hut&sku=all-product-reviews&branch=')
+                              .then(function(response){
+
+
+                                if(response.data.stats.count != 0){
+
+                                    total_reviews += Number(response.data.stats.count);
+                                    average_score += Number(response.data.stats.average);
+                                    divide_number++;
+                                }
+                                completed_API_tasks++;
+                                completed();
+
+                              });
+
+                        break;
+                    }
+                    case "third-party": {
+
+                        axios.get('https://api.reviews.io/third-party/reviews?store=the-pi-hut')
+                             .then(function(response){
+
+
+                                if(response.data.stats.total_third_party_reviews != "0"){
+
+                                    total_reviews += Number(response.data.stats.total_third_party_reviews);
+                                    average_score += Number(response.data.stats.average_third_party_rating);
+                                    divide_number++;
+                                }
+                                completed_API_tasks++;
+                                completed();
+
+                             });
+
+                        break;
+                    }
+                    default:
+                        // ContentMode Not Valid
+                        break;
+
+
+                    }
+            }
+
+            function completed(){
+
+                if(completed_API_tasks == contentTemplates.length){
+
+                    average_score = (average_score/divide_number);
+
+                var starsWraps = document.querySelectorAll(".starsWrap");
+                for(var i=0;i<starsWraps.length;i++) {
+                    starsWraps[i].innerHTML = renderRating(average_score);
+                }
+
+                var counts = document.querySelectorAll(".ruk_count");
+                for(var i=0;i<counts.length;i++) {
+                    counts[i].innerHTML = total_reviews.toLocaleString();
+                }
+
+                var ratings = document.querySelectorAll(".ruk_rating");
+                for(var i=0;i<ratings.length;i++) {
+                    ratings[i].innerHTML = parseFloat(average_score).toFixed(2).replace('.','.');
+                }
+
+                var badgeStars = document.querySelectorAll(".BadgeRibbon__stars");
+                for(var i=0;i<badgeStars.length;i++) {
+                    badgeStars[i].innerHTML = renderRating(parseFloat(average_score).toFixed(2));
+                }
+
+                resize();
+
+                }
+            }
+
+
+
+            var params, widget;
+            widget = document.querySelector('.BadgeRibbon');
+            size = getParameterByName('size');
+
+            if (size === 'small') {
+                widget.classList.add('BadgeRibbon--small');
+            }
+
+
+        function renderRating(rating) {
+
+            // Round to nearest quater
+            rating = Math.round(rating * 4)/4;
+
+            var html = '';
+            for(i=1; i<=5; i++){
+                    if(i <= rating){
+                          html += '<i class="ruk-icon-full-star-01 RatingStars__star"></i> ';
+                    } else if(i - 0.25 <= rating) {
+						            html += '<i class="ruk-icon-percentage-star-75-01 RatingStars__star"></i> ';
+                    } else if(i - 0.5 <= rating) {
+						            html += '<i class="ruk-icon-percentage-star-50-01 RatingStars__star"></i> ';
+                    } else if(i - 0.75 <= rating) {
+						            html += '<i class="ruk-icon-percentage-star-25-01 RatingStars__star"></i> ';
+                    } else {
+                        html += '<i class="ruk-icon-empty-star-01 RatingStars__star"></i> ';
+                    }
+            }
+            return html;
+        };
+
+
+        function resize(){
+            var bodyStyle = window.getComputedStyle(document.body);
+            var height = parseInt(bodyStyle.getPropertyValue("height")) + 5;
+
+            window.parent.postMessage(JSON.stringify({
+                action: 'widget-resize',
+                height: height,
+                elementId: 'badge-ribbon'
+            }),'*');
+        }
+
+        function getParameterByName(name, url) {
+              if (!url) url = window.location.href;
+              name = name.replace(/[\[\]]/g, "\\$&");
+              var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                  results = regex.exec(url);
+              if (!results) return null;
+              if (!results[2]) return '';
+              return decodeURIComponent(results[2].replace(/\+/g, " "));
+        }
+
+        resize();
+        </script>
+<style type="text/css">undefined</style>
+
+
+</body></html>
